@@ -31,4 +31,23 @@ router.get("/api/posts/:id", async (req, res) => {
   }
 });
 
+router.post("/api/posts", (req, res) => {});
+
+router.put("/api/posts/:id", (req, res) => {});
+
+router.delete("/api/posts/:id", async (req, res) => {
+  try {
+    const post = await Posts.remove(req.params.id);
+    if (!post) {
+      res
+        .status(404)
+        .json({ message: "The post with the specified ID does not exist" });
+    } else {
+      res.json(post);
+    }
+  } catch (err) {
+    res.status(500).json({ message: "The post could not be removed" });
+  }
+});
+
 module.exports = router;
