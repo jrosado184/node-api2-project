@@ -44,11 +44,39 @@ router.post("/api/posts", (req, res) => {
       })
       .then((post) => {
         res.status(201).json(post);
+      })
+      .catch((err) => {
+        res.status(500).json({
+          message: "There was an error while saving the post to the database",
+        });
       });
   }
 });
 
-// router.put("/api/posts/:id", (req, res) => {});
+router.put("/api/posts/:id", (req, res) => {
+  const { title, contents } = req.body;
+  if (!title || !contents) {
+    res
+      .status(400)
+      .json({ message: "Please provide title and contents for the post" });
+  } else {
+    Posts.findById(req.params.id).then((id) => {
+      if (!id) {
+        res
+          .status(404)
+          .json({ message: "The post with the specified ID does not exist" });
+      } else {
+        return Posts.update(req.params.id, { title, contents }).then((data) => {
+          if (data) {
+            return Posts.findById(req.params.id).then((post) => {
+              res.json(post);
+            });
+          }
+        });
+      }
+    });
+  }
+});
 
 router.delete("/api/posts/:id", async (req, res) => {
   try {
