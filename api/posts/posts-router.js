@@ -31,7 +31,22 @@ router.get("/api/posts/:id", async (req, res) => {
   }
 });
 
-// router.post("/api/posts", (req, res) => {});
+router.post("/api/posts", (req, res) => {
+  const { title, contents } = req.body;
+  if (!title || !contents) {
+    res
+      .status(400)
+      .json({ message: "Please provide title and contents for the post" });
+  } else {
+    Posts.insert({ title, contents })
+      .then(({ id }) => {
+        return Posts.findById(id);
+      })
+      .then((post) => {
+        res.status(201).json(post);
+      });
+  }
+});
 
 // router.put("/api/posts/:id", (req, res) => {});
 
